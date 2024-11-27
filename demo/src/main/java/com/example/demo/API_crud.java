@@ -16,6 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 //This code creates and URL "/getDados" that returns a string
 //Access http://127.0.0.1:8081/getDados to test the code
@@ -33,8 +35,6 @@ public class API_crud {
         String senha = jsonObject.get("senha").toString();
         senha = senha.replace("\"", "");
 
-        System.out.println(email);
-        System.out.println(senha);
         try(Connection con = banco.getConnection()){
             PreparedStatement ps =con.prepareStatement("""
                     SELECT * FROM usuarios WHERE email = ?
@@ -43,17 +43,29 @@ public class API_crud {
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
                 String senha1 = rs.getString("senha");
-                System.out.println(senha1);
-                System.out.println(senha);
                 if(senha1.equals(senha)){
-                    throw new ResponseStatusException(HttpStatus.ACCEPTED, "CONECTADO");
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("ok", true);
+                    response.put("message", "CONECTADO");
+
+                    return new ResponseEntity(response, HttpStatus.ACCEPTED); // Status 202
                 }
                 else{
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Senha incorreta");
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("ok", false);
+
+                    response.put("message", "SENHA INCORRETA");
+
+                    return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
             else{
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Conta inexistente");
+                Map<String, Object> response = new HashMap<>();
+                response.put("ok", false);
+
+                response.put("message", "EMAIL INEXISTENTE");
+
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
