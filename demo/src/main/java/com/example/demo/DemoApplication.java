@@ -8,9 +8,7 @@ public class DemoApplication {
 	static DB db = new DB();
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(DemoApplication.class, args);
-
 	}
 
 }

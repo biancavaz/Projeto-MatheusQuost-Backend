@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DB {
     private final String URL = "jdbc:mysql://localhost:3306/sistema_login?";
     private final String USER = "root";
-    private final String PASSWORD = "";
+    private final String PASSWORD = "root";
 
     public Connection getConnection() throws SQLException {
         //class - static method to connect to database

@@ -96,4 +96,5 @@ public class API_crud {
         String json = new Gson().toJson(lista);
         return json;
     }
+
 }
