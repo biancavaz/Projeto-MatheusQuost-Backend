@@ -27,7 +27,7 @@ public class API_crud {
 
     //API LOGIN
     @PostMapping("/login")
-    public ResponseEntity<String> TentativaLogin(@RequestBody String json){
+    public ResponseEntity<String> Login(@RequestBody String json){
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
         String email = jsonObject.get("email").toString();
         email = email.replace("\"", "");
@@ -72,6 +72,8 @@ public class API_crud {
         }
 
     }
+
+
 
 
     //CRUD SELECT
