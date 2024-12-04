@@ -95,7 +95,7 @@ public class API_crud {
         return json;
     }
 
-    //CRUD SELECT
+    //CRUD DELETE
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id){
 
@@ -121,5 +121,32 @@ public class API_crud {
 
     }
 
+    //CRUD INSERTO
+    @PostMapping("/insert")
+    public ResponseEntity<String> deleteUser(@RequestBody String json){
+        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+        try(Connection con = banco.getConnection()){
+            PreparedStatement ps =con.prepareStatement("""
+                    INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)
+                    """);
+            ps.setString(1, jsonObject.get("nome").toString().replace("\"", ""));
+            ps.setString(2, jsonObject.get("email").toString().replace("\"", ""));
+            ps.setString(3, jsonObject.get("senha").toString().replace("\"", ""));
+
+            if(ps.executeUpdate()>0){
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "INSERIDO");
+                return new ResponseEntity(response, HttpStatus.ACCEPTED);
+
+            }
+
+        }catch (SQLException e){
+            throw new RuntimeException();
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "NÃO INSERIDO");
+        return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
 
 }
