@@ -5,10 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Connection;
@@ -85,9 +82,10 @@ public class API_crud {
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
+                int id = rs.getInt("id");
                 String nome =rs.getString("nome");
                 String email = rs.getString("email");
-                lista.add(new User(nome, email));
+                lista.add(new User(id, nome, email));
 
             }
         }catch (SQLException e){
@@ -96,5 +94,32 @@ public class API_crud {
         String json = new Gson().toJson(lista);
         return json;
     }
+
+    //CRUD SELECT
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id){
+
+        try(Connection con = banco.getConnection()){
+            PreparedStatement ps =con.prepareStatement("""
+                    DELETE FROM usuarios WHERE id = ?
+                    """);
+            ps.setLong(1, id);
+
+            if(ps.executeUpdate()>0){
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "DELETADO");
+                return new ResponseEntity(response, HttpStatus.ACCEPTED);
+
+            }
+
+        }catch (SQLException e){
+            throw new RuntimeException();
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "NÃO DELETADO");
+        return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
 
 }
